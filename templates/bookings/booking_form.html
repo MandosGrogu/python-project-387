@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}{% if object %}Редактировать бронирование{% else %}Новое бронирование{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="mb-8">
+        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">
+            {% if object %}Редактировать бронирование{% else %}Новое бронирование{% endif %}
+        </h1>
+        <p class="text-gray-500 mt-1">Заполните информацию о звонке</p>
+    </div>
+
+    <form method="post" class="bg-white shadow-xl shadow-gray-200/50 rounded-2xl border border-gray-100 p-8 space-y-6">
+        {% csrf_token %}
+
+        {% for field in form %}
+        <div>
+            <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                {{ field.label }}
+            </label>
+            {{ field }}
+            {% if field.errors %}
+                <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    {{ field.errors.0 }}
+                </p>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        {% if form.non_field_errors %}
+        <div class="rounded-xl bg-red-50 border border-red-200 px-4 py-3">
+            {% for error in form.non_field_errors %}
+            <p class="text-sm text-red-600 flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                {{ error }}
+            </p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="flex gap-3 pt-6 border-t border-gray-100">
+            <button type="submit"
+                    class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl text-sm font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-200 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                {% if object %}Сохранить{% else %}Создать{% endif %}
+            </button>
+            <a href="{% url 'bookings:calendar' %}"
+               class="bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 text-gray-700 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200">
+                Отмена
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
