@@ -24,6 +24,7 @@ jobs:
         uses: anomalyco/opencode/github@latest
         env:
           OPENCODE_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           model: opencode/longcat-2.5-preview-free
           prompt: "Проанализируй проблему, категоризируй её и предложи варианты решения."
