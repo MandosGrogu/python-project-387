@@ -1,6 +1,6 @@
 name: opencode
 on:
-  issue:
+  issues:
     types: [opened]
   issue_comment:
     types: [created]
