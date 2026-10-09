@@ -1,4 +1,4 @@
-name: opencode
+name: opencode_pull_request
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]

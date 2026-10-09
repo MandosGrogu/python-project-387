@@ -1,0 +1,69 @@
+name: opencode_schedule
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-on-version: '20'
+
+      - name: Install Lighthouse CLI
+        run: npm install -g lighthouse
+        
+      - name: Configure Git Author and Credentials
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          echo "machine github.com login x-access-token password ${{ secrets.GITHUB_TOKEN }}" > ~/.netrc
+          chmod 600 ~/.netrc
+
+      - name: Run Lighthouse Audit
+        run: |
+          lighthouse \${{ vars.LIGHTHOUSE_TARGET_URL }} --output=json --output=html --output-path=./lighthouse-report
+        continue-on-error: true
+
+      - name: Analyze Report with OpenCode
+        uses: anomalyco/opencode/github@latest
+        env:
+          OPENCODE_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GIT_AUTH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          use_github_token: true
+          model: opencode/longcat-2.5-preview-free
+          prompt: |
+            Ты — AI-инженер по автоматизации и оптимизации качества веб-приложений.
+            Перед тобой результаты сырого отчета утилиты Lighthouse, сохраненные в директории `./lighthouse-report.json`.
+            
+            Выполни следующие инструкции:
+            1. Прочитай и проанализируй полученный JSON-файл отчета производительности.
+            2. Выдели критические проблемы (метрики LCP, FID, CLS, доступность или SEO-показатели, упавшие ниже нормы).
+            3. Сформируй понятный человекочитаемый технический отчет с выводами.
+            4. **Обязательное действие**: Используй свои встроенные инструменты GitHub API и автоматически **создай новый Issue (задачу)** в этом репозитории. 
+               - Заголовок задачи должен быть: `[Авто-аудит] Проблемы производительности — <текущая дата>`.
+               - В тело задачи добавь структурированные итоги проверки, найденные узкие места и конкретные рекомендации по оптимизации кода для разработчиков.
+      
+      - name: Upload Audit Reports as Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-performance-reports
+          path: |
+            ./lighthouse-report.json
+            ./lighthouse-report.html
+          retention-days: 14
