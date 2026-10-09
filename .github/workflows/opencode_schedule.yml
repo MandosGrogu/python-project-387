@@ -21,7 +21,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-on-version: '20'
+          node-version: '20'
 
       - name: Install Lighthouse CLI
         run: npm install -g lighthouse
@@ -35,7 +35,10 @@ jobs:
 
       - name: Run Lighthouse Audit
         run: |
-          lighthouse \${{ vars.LIGHTHOUSE_TARGET_URL }} --output=json --output=html --output-path=./lighthouse-report
+          lighthouse ${{ vars.LIGHTHOUSE_TARGET_URL }} \
+            --chrome-flags="--headless --no-sandbox --disable-gpu" \
+            --output=json --output=html \
+            --output-path=./lighthouse-report
         continue-on-error: true
 
       - name: Analyze Report with OpenCode
@@ -63,7 +66,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-performance-reports
-          path: |
-            ./lighthouse-report.json
-            ./lighthouse-report.html
+          path: ./lighthouse-report.*
           retention-days: 14
