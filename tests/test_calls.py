@@ -11,9 +11,16 @@ from bookings.forms import BookingForm
 from bookings.models import Booking
 
 
+def next_workday():
+    day = date.today() + timedelta(days=1)
+    while day.weekday() >= 5:
+        day += timedelta(days=1)
+    return day
+
+
 def get_valid_form_data(**overrides):
     data = {
-        'date': date.today() + timedelta(days=1),
+        'date': next_workday(),
         'time': time(10, 0),
         'client_name': 'Иван Иванов',
         'topic': 'Обсуждение проекта',
