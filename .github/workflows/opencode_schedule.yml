@@ -34,7 +34,14 @@ jobs:
           chmod 600 ~/.netrc
 
       - name: Run Lighthouse Audit
-        run: lighthouse ${{ vars.LIGHTHOUSE_TARGET_URL }} --chrome-flags="--headless --no-sandbox --disable-gpu" --output=json --output=html --output-path=./lighthouse-report
+        env:
+          TARGET_URL: ${{ vars.LIGHTHOUSE_TARGET_URL }}
+        run: |
+          if [ -z "$TARGET_URL" ]; then
+            echo "Error: LIGHTHOUSE_TARGET_URL variable is not set in GitHub Repository Settings!"
+            exit 1
+          fi
+          lighthouse "$TARGET_URL" --chrome-flags="--headless --no-sandbox --disable-gpu" --output=json --output=html --output-path=./lighthouse-report
         continue-on-error: true
 
       - name: Analyze Report with OpenCode
