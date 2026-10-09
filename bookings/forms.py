@@ -69,9 +69,10 @@ class BookingForm(forms.ModelForm):
         booking_date = cleaned_data.get('date')
         booking_time = cleaned_data.get('time')
         if booking_date and booking_time:
-            booking_datetime = timezone.make_aware(datetime.combine(booking_date, booking_time))
-            if booking_datetime <= timezone.now():
-                self.add_error('date', 'Нельзя запланировать звонок на прошедшее время')
+            if self.instance.pk is None:
+                booking_datetime = timezone.make_aware(datetime.combine(booking_date, booking_time))
+                if booking_datetime <= timezone.now():
+                    self.add_error('date', 'Нельзя запланировать звонок на прошедшее время')
             occupied = Booking.objects.filter(date=booking_date, time=booking_time)
             if self.instance.pk is not None:
                 occupied = occupied.exclude(pk=self.instance.pk)
