@@ -14,6 +14,7 @@ class BookingForm(forms.ModelForm):
         widgets = {
             'date': forms.DateInput(attrs={
                 'type': 'date',
+                'min': timezone.localdate().isoformat(),
                 'class': 'w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 '
                           'focus:outline-none focus:ring-2 focus:ring-blue-500 '
                           'focus:border-transparent transition-all duration-200'
@@ -68,10 +69,9 @@ class BookingForm(forms.ModelForm):
         booking_date = cleaned_data.get('date')
         booking_time = cleaned_data.get('time')
         if booking_date and booking_time:
-            if self.instance.pk is None:
-                booking_datetime = timezone.make_aware(datetime.combine(booking_date, booking_time))
-                if booking_datetime <= timezone.now():
-                    self.add_error('date', 'Нельзя запланировать звонок на прошедшее время')
+            booking_datetime = timezone.make_aware(datetime.combine(booking_date, booking_time))
+            if booking_datetime <= timezone.now():
+                self.add_error('date', 'Нельзя запланировать звонок на прошедшее время')
             occupied = Booking.objects.filter(date=booking_date, time=booking_time)
             if self.instance.pk is not None:
                 occupied = occupied.exclude(pk=self.instance.pk)
