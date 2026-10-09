@@ -35,7 +35,7 @@ jobs:
 
       - name: Run Lighthouse Audit
         env:
-          TARGET_URL: ${{ vars.LIGHTHOUSE_TARGET_URL }}
+          TARGET_URL: ${{ secrets.LIGHTHOUSE_TARGET_URL }}
         run: |
           if [ -z "$TARGET_URL" ]; then
             echo "Error: LIGHTHOUSE_TARGET_URL variable is not set in GitHub Repository Settings!"
