@@ -1,9 +1,7 @@
 name: opencode
 on:
-  issue_comment:
-    types: [created]
-  pull_request_review_comment:
-    types: [created]
+  issues:
+    types: [opened]
 jobs:
   opencode:
     if: |
@@ -34,4 +32,10 @@ jobs:
         with:
           use_github_token: true
           model: opencode/longcat-2.5-preview-free
+          prompt: |
+            Ты — нативный AI-агент OpenCode, интегрированный в GitHub. 
+            Внимательно изучи текст последнего комментария пользователя.
+            
+            Если пользователь написал команду `/oc fix` или `/opencode fix`:
+            Используй свои встроенные инструменты автоматизации репозитория. Авторизуйся в API, используя предоставленный GITHUB_TOKEN/GIT_AUTH_TOKEN с правами на запись. Тебе необходимо самостоятельно отправить (push) созданную локально ветку с префиксом `opencode/` в удаленный репозиторий и отправить POST-запрос на создание Pull Request, связав его с текущим Issue.
           mentions: "/opencode, /oc"
