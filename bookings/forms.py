@@ -14,6 +14,7 @@ class BookingForm(forms.ModelForm):
         widgets = {
             'date': forms.DateInput(attrs={
                 'type': 'date',
+                'min': timezone.localdate().isoformat(),
                 'class': 'w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 '
                           'focus:outline-none focus:ring-2 focus:ring-blue-500 '
                           'focus:border-transparent transition-all duration-200'
