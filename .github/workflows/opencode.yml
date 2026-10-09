@@ -30,6 +30,4 @@ jobs:
         with:
           use_github_token: true
           model: opencode/longcat-2.5-preview-free
-          mentions: |
-            /opencode
-            /oc
+          mentions: "/opencode, /oc"
