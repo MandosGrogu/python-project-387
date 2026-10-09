@@ -20,16 +20,15 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
-      - name: Set up Git author and credentials
+      - name: Configure Git Auth
         run: |
-          git config --global user.email "github-actions[bot]@://github.com"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git config --global url."https://x-access-token:\${{ secrets.GITHUB_TOKEN }}@://github.com".insteadOf "https://://github.com"
+          git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@://github.com{{ github.repository }}.git"
       - name: Run OpenCode
         uses: anomalyco/opencode/github@latest
         env:
           OPENCODE_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          GIT_AUTH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           use_github_token: true
