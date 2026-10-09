@@ -22,7 +22,7 @@ jobs:
         env:
           OPENCODE_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         with:
-          model: opencode-go/longcat-2.5-preview-free
+          model: opencode/longcat-2.5-preview-free
           prompt: "Проанализируй проблему, категоризируй её и предложи варианты решения."
           mentions: |
             /opencode
