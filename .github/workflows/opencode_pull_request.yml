@@ -1,0 +1,44 @@
+name: opencode
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+jobs:
+  opencode:
+    if: |
+      contains(github.event.comment.body, '/opencode') || contains(github.event.comment.body, '/oc')
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: read
+      issues: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Configure Git Author and Credentials
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          echo "machine github.com login x-access-token password ${{ secrets.GITHUB_TOKEN }}" > ~/.netrc
+          chmod 600 ~/.netrc
+      - name: Run OpenCode
+        uses: anomalyco/opencode/github@latest
+        env:
+          OPENCODE_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GIT_AUTH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          use_github_token: true
+          model: opencode/longcat-2.5-preview-free
+          prompt: |
+            Ты — AI-ассистент, проводящий первичное техническое ревью кода.
+            Проанализируй изменения в этом Pull Request на основе следующих критериев:
+            1. **Стиль и стандарты**: Проверь соответствие базовым правилам написания кода, чистоту и читаемость структуры.
+            2. **Типизация**: Убедись в корректности типов данных, отсутствии явных логических несоответствий или пропущенных аннотаций.
+            3. **Очевидные ошибки**: Найди потенциальные уязвимости, крайние случаи (edge cases), которые не учтены, или забытые отладочные конструкции (print, console.log и т.д.).
+            
+            Оставь структурированные замечания. Сфокусируйся на локальных деталях кода, чтобы человек-ревьюер мог оценить общую картину целиком. Не пытайся одобрить или влить пул-реквест.
+          mentions: "/opencode, /oc"
