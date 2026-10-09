@@ -22,10 +22,12 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
-      - name: Set up Git author
+      - name: Set up Git author and credentials
         run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.email "github-actions[bot]@://github.com"
           git config --global user.name "github-actions[bot]"
+          # Принудительно подставляем GITHUB_TOKEN для любых операций push/pull в этот репозиторий
+          git config --global url."https://x-access-token:\${{ secrets.GITHUB_TOKEN }}@://github.com".insteadOf "https://://github.com"
       - name: Run OpenCode
         uses: anomalyco/opencode/github@latest
         env:
