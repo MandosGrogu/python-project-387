@@ -34,11 +34,7 @@ jobs:
           chmod 600 ~/.netrc
 
       - name: Run Lighthouse Audit
-        run: |
-          lighthouse ${{ vars.LIGHTHOUSE_TARGET_URL }} \
-            --chrome-flags="--headless --no-sandbox --disable-gpu" \
-            --output=json --output=html \
-            --output-path=./lighthouse-report
+        run: lighthouse ${{ vars.LIGHTHOUSE_TARGET_URL }} --chrome-flags="--headless --no-sandbox --disable-gpu" --output=json --output=html --output-path=./lighthouse-report
         continue-on-error: true
 
       - name: Analyze Report with OpenCode
@@ -52,16 +48,16 @@ jobs:
           model: opencode/longcat-2.5-preview-free
           prompt: |
             Ты — AI-инженер по автоматизации и оптимизации качества веб-приложений.
-            Перед тобой результаты сырого отчета утилиты Lighthouse, сохраненные в директории `./lighthouse-report.json`.
+            Перед тобой результаты сырого отчета утилиты Lighthouse, сохраненные в файле `./lighthouse-report.report.json`.
             
             Выполни следующие инструкции:
             1. Прочитай и проанализируй полученный JSON-файл отчета производительности.
             2. Выдели критические проблемы (метрики LCP, FID, CLS, доступность или SEO-показатели, упавшие ниже нормы).
             3. Сформируй понятный человекочитаемый технический отчет с выводами.
             4. **Обязательное действие**: Используй свои встроенные инструменты GitHub API и автоматически **создай новый Issue (задачу)** в этом репозитории. 
-               - Заголовок задачи должен быть: `[Авто-аудит] Проблемы производительности — <текущая дата>`.
-               - В тело задачи добавь структурированные итоги проверки, найденные узкие места и конкретные рекомендации по оптимизации кода для разработчиков.
-      
+               - Заголовок задачи должен быть: `[Авто-аудит] Проблемы производительности — 2026-10-09`.
+               - В тело задачи добавь структурированные итоги проверки, найденные узкие места и конкретные рекомендации по оптимизации кода для разработчиков.      
+
       - name: Upload Audit Reports as Artifacts
         uses: actions/upload-artifact@v4
         with:
